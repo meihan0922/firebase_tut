@@ -1,3 +1,6 @@
+Firebase_Firestore_Tutorial
+
+Firebase fireStore筆記
 ###### tags: `Firebase`,`Firestore`
 
 # Firebase Firestore Tutorial
@@ -75,4 +78,68 @@ db.collection("cafes").add({
 ## 005 - delete data
 ```javascript=
 db.collection("cafes").doc("指定doc.id").delete();
+```
+---
+## 006 - query data
+```javascript=
+// .where('要比較的key', '比較值', '要搜尋的字')
+db.collection("cafes").where('city', '==', 'manchester')
+```
+---
+## 007 - order data
+會照字母排序，但大寫優先於小寫
+如果他報錯
+![](https://i.imgur.com/OGczydv.png)
+則點擊後面網去firebase建立index順序即可
+```javascript=
+db.collection("cafes").orderBy('name')
+```
+---
+## 008 - Update data
+update是更新但保留沒有要更改的部分，set會直接覆蓋掉整個物件
+```javascript=
+db.collection("cafes").doc("指定doc.id").update({
+    city: "要更新的值"
+})
+db.collection("cafes").doc("指定doc.id").set({
+    city: "要覆蓋的值",
+    name: "要覆蓋的值"
+})
+```
+---
+## 008 - Real-time data
+我們想要即時更新畫面，依照database，要怎麼做?
+可以使用onSnapshot，他會去監聽database變化!
+當第一次load up，會存下一開始抓的資料以及他的狀態，而後發生變化就會做比對，改變狀態
+```javascript=
+// 就不用使用get了
+// db.collection("cafes").get()
+// .then(snapshot=>{
+//     //每個集合snapshot.docs
+//     snapshot.docs.forEach(doc => {
+//         console.log(doc.data());
+//     })
+// })
+db.collection("cafes").onSnapshot(snapshot=>{
+    let changes = snapshot.docChanges();
+    console.log(changes);
+})
+```
+![](https://i.imgur.com/InbDfis.png)
+上面的type表示第一次載入狀態是added新增
+```javascript=
+// real-time data
+db.collection("cafes").onSnapshot((snapshot) => {
+  let changes = snapshot.docChanges();
+  changes.forEach((change) => {
+    if (change.type === "added") {
+        // 如果狀態為added則render(為初始狀態)
+      render(change.doc);
+    } else if (change.type === "removed") {
+        // 如果狀態變成removed則操作dom移除他
+      let li = cafeList.querySelector("[data-id=" + change.doc.id + "]");
+      cafeList.removeChild(li);
+    }
+  });
+});
 ```
