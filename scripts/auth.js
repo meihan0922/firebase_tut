@@ -1,16 +1,14 @@
-db.collection("guides")
-  .get()
-  .then((snapshot) => {
-    setupGuides(snapshot.docs);
-  });
-
 // 監聽狀態改變
 auth.onAuthStateChanged((user) => {
-  // 只有在登入狀態下才會有user資訊
+  // 只有在登入狀態下才能取得資料庫內容，同時資料庫也會去阻擋擁有id的人才能讀寫資料
   if (user) {
-    console.log("user logged in => ", user);
+    db.collection("guides")
+      .get()
+      .then((snapshot) => {
+        setupGuides(snapshot.docs);
+      });
   } else {
-    console.log("user logged out");
+    setupGuides([]);
   }
 });
 
