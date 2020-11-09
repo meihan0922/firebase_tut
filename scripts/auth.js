@@ -7,8 +7,10 @@ auth.onAuthStateChanged((user) => {
       .then((snapshot) => {
         setupGuides(snapshot.docs);
       });
+    setUpUI(user);
   } else {
     setupGuides([]);
+    setUpUI();
   }
 });
 
