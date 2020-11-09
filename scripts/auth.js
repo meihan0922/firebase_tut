@@ -3,10 +3,13 @@ auth.onAuthStateChanged((user) => {
   // 只有在登入狀態下才能取得資料庫內容，同時資料庫也會去阻擋擁有id的人才能讀寫資料
   if (user) {
     // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
-    db.collection("guides").onSnapshot((snapshot) => {
-      setupGuides(snapshot.docs);
-    });
-    setUpUI(user);
+    // 但登出時，也會即時的去比對，就會跳出錯誤說沒有權限取得資料庫
+    db.collection("guides")
+      .onSnapshot((snapshot) => {
+        setupGuides(snapshot.docs);
+        setUpUI(user);
+      })
+      .catch((err) => console.log(err.message));
   } else {
     setupGuides([]);
     setUpUI();
@@ -71,7 +74,6 @@ loginForm.addEventListener("submit", (e) => {
   const email = loginForm["login-email"].value;
   const password = loginForm["login-password"].value;
   auth.signInWithEmailAndPassword(email, password).then((cred) => {
-    console.log(cred.user);
     const modal = document.querySelector("#modal-login");
     // materialize library內建的方法，在登入後關閉並且input清空
     M.Modal.getInstance(modal).close;
