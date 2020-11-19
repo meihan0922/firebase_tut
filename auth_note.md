@@ -458,3 +458,48 @@ create 和 write 的不同在於，write 可以編輯。
 如果有這個使用者就可以創造這個集合，
 但只有使用者本人可以讀這筆資料
 ![](https://i.imgur.com/1Sqekcp.png)
+
+---
+
+## 13. Intro to Custom Claims
+
+創造管理員!透過判斷是否是管理員來驅動資料權限跟前端的顯示，但這個判斷不能寫在前端裡面，會不安全，可能會被串改，有安全漏洞!
+![](https://i.imgur.com/2Jy0uTV.png)
+
+所以要使用 firebase cloud function!
+在官方網站有寫說那些情況下會使用到 firebase cloud function，
+https://firebase.google.com/docs/functions/use-cases
+第一點可以用在 PWA 上面，第三點就是我們要做的事情!
+目標是希望從前端可以跟後端說讓某使用者可以變成 admin(管理員)!
+
+![](https://i.imgur.com/d4gCqnk.png)
+
+> **最主要的觀念是:** > **cloud function 是在 server 端上執行的，不會暴露在前端!** > **不能給客戶端使用者執行，但是如果使用者有權限是可以從前端 call 的!!**
+
+**安裝:**
+
+```bash=
+npm i firebase-tools -g
+```
+
+**登入**
+
+```bash=
+firebase login
+```
+
+**初始化:**
+
+```bash=
+firebase init functions
+```
+
+會開始問很多問題
+![](https://i.imgur.com/nthzZF3.png)
+
+![](https://i.imgur.com/SD9Lz7X.png)
+
+最後幫你建立好環境
+![](https://i.imgur.com/Hq5Qc8F.png)
+
+---
