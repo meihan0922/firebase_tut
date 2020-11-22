@@ -1,17 +1,35 @@
+// 新增管理員連結到cloud functions
+const adminForm = document.querySelector(".admin-actions");
+adminForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const adminEmail = document.querySelector("#admin-email").value;
+  const addAdminRole = functions.httpsCallable("addAdminRole");
+  addAdminRole({ email: adminEmail }).then((result) => {
+    console.log(result);
+  });
+});
+
 // 監聽狀態改變
 auth.onAuthStateChanged((user) => {
   // 只有在登入狀態下才能取得資料庫內容，同時資料庫也會去阻擋擁有id的人才能讀寫資料
   if (user) {
-    // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
-    // 但登出時，後端可能接收到登出但因為非同步，這邊的user還會存在，就會跳出錯誤說沒有權限取得資料庫，因此要catch err
-    // onSnapshot的第二個參數專門在處理error
-    db.collection("guides").onSnapshot(
-      (snapshot) => {
-        setupGuides(snapshot.docs);
-        setUpUI(user);
-      },
-      (err) => console.log(err.message)
-    );
+    if (
+      user.getIdTokenResult().then((idTokenResult) => {
+        console.log(idTokenResult.claims); // 整個完整的token，email.userId...
+        console.log(idTokenResult.claims.admin); //如果是管理者會是true
+        user.admin = idTokenResult.claims.admin;
+      })
+    )
+      // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
+      // 但登出時，後端可能接收到登出但因為非同步，這邊的user還會存在，就會跳出錯誤說沒有權限取得資料庫，因此要catch err
+      // onSnapshot的第二個參數專門在處理error
+      db.collection("guides").onSnapshot(
+        (snapshot) => {
+          setupGuides(snapshot.docs);
+          setUpUI(user);
+        },
+        (err) => console.log(err.message)
+      );
   } else {
     setupGuides([]);
     setUpUI();
