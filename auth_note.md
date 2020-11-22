@@ -1,4 +1,4 @@
-###### tags: `Firebase`,`Authentication
+###### tags: `Firebase`, `Authentication`
 
 # Firebase Authentication Tutorial
 
@@ -60,6 +60,8 @@ https://youtu.be/aN1LnNq4z54
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   firebase.analytics();
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 </script>
 ```
 
@@ -83,12 +85,13 @@ signupForm.addEventListener("submit", (e) => {
   // signup the user，非同步的，不確定完成時間，會回傳token，我們要讓他自動登入
   auth.createUserWithEmailAndPassword(email, password).then((cred) => {
     console.log("註冊的資訊 => ", cred);
-    console.log("使用者資訊 => ", cred.user);
+    console.log("使用者資訊 => ", cred.user)
     // materialize library內建的方法，在註冊後關閉並且input清空
     M.Modal.getInstance(modal).close;
     signupForm.reset();
   });
 });
+
 ```
 
 ![](https://i.imgur.com/4qM5j5v.png)
@@ -136,6 +139,7 @@ loginForm.addEventListener("submit", (e) => {
     loginForm.reset();
   });
 });
+
 ```
 
 ---
@@ -214,7 +218,7 @@ https://firebase.google.com/docs/firestore/security/rules-structure
 auth.onAuthStateChanged((user) => {
   if (user) {
     db.collection("guides")
-      // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
+    // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
       .onSnapshot((snapshot) => {
         setupGuides(snapshot.docs);
       });
@@ -282,10 +286,11 @@ const setUpUI = (user) => {
 // 監聽狀態改變
 auth.onAuthStateChanged((user) => {
   if (user) {
-    db.collection("guides").onSnapshot((snapshot) => {
-      setupGuides(snapshot.docs);
-      setUpUI(user);
-    });
+    db.collection("guides")
+      .onSnapshot((snapshot) => {
+        setupGuides(snapshot.docs);
+        setUpUI(user);
+      });
   } else {
     setupGuides([]);
     setUpUI();
@@ -356,16 +361,16 @@ createForm.addEventListener("submit", (e) => {
 `index.js`
 
 ```javascript=
-const accountDetails = document.querySelector(".account-details");
+const accountDetails = document.querySelector('.account-details');
 
-const setupUI = (user) => {
-  if (user) {
-    const html = `<div>${user.email}</div>`;
-    accountDetails.innerHtml = html;
-  } else {
-    accountDetails.innerHtml = "";
-  }
-};
+const setupUI = user => {
+    if(user){
+        const html = `<div>${user.email}</div>`;
+        accountDetails.innerHtml = html;
+    }else{
+        accountDetails.innerHtml = '';
+    }
+}
 ```
 
 `auth.js`
@@ -378,13 +383,11 @@ auth.onAuthStateChanged((user) => {
     // 及時顯示! .onSnapshot就像是對當下資料做快照，而後發生改變就去比對，只要不一樣就會觸發
     // 但登出時，後端可能接收到登出但因為非同步，這邊的user還會存在，就會跳出錯誤說沒有權限取得資料庫，因此要catch err
     // onSnapshot的第二個參數專門在處理error
-    db.collection("guides").onSnapshot(
-      (snapshot) => {
+    db.collection("guides")
+      .onSnapshot(snapshot => {
         setupGuides(snapshot.docs);
         setUpUI(user);
-      },
-      (err) => console.log(err.message)
-    );
+      }, err => console.log(err.message));
   } else {
     setupGuides([]);
     setUpUI();
@@ -412,23 +415,23 @@ auth.onAuthStateChanged((user) => {
 `auth.js`
 
 ```javascript=
-auth
-  .createUserWithEmailAndPassword(email, password)
-  .then((cred) => {
-    console.log("註冊的資訊 => ", cred);
-    // 回傳在db內新增users資料，後台沒有這個欄位就會自動建立
-    // doc(這個集合的keyname)
-    return db.collection("users").doc(cred.user.uid).set({
-      bio: signupForm["signup-bio"].value,
+  auth
+    .createUserWithEmailAndPassword(email, password)
+    .then((cred) => {
+      console.log("註冊的資訊 => ", cred);
+      // 回傳在db內新增users資料，後台沒有這個欄位就會自動建立
+      // doc(這個集合的keyname)
+      return db.collection("users").doc(cred.user.uid).set({
+        bio: signupForm["signup-bio"].value,
+      });
+    })
+    .then(() => {
+      // 用then銜接本來要做的動作
+      // 如果成功建立後端的doc時，再把input清空關閉視窗
+      const modal = document.querySelector("#modal-signup");
+      M.Modal.getInstance(modal).close;
+      signupForm.reset();
     });
-  })
-  .then(() => {
-    // 用then銜接本來要做的動作
-    // 如果成功建立後端的doc時，再把input清空關閉視窗
-    const modal = document.querySelector("#modal-signup");
-    M.Modal.getInstance(modal).close;
-    signupForm.reset();
-  });
 ```
 
 ![](https://i.imgur.com/o6lqm1C.png)
@@ -448,9 +451,8 @@ const setUpUI = (user) => {
         `;
         accountDetails.innerHTML = html;
       });
-    // ...省略
-  }
-};
+      // ...省略
+}}
 ```
 
 另外 firestore rule 要設定成存取權限
@@ -476,19 +478,19 @@ https://firebase.google.com/docs/functions/use-cases
 
 > **最主要的觀念是:** > **cloud function 是在 server 端上執行的，不會暴露在前端!** > **不能給客戶端使用者執行，但是如果使用者有權限是可以從前端 call 的!!**
 
-**安裝:**
+**cli 安裝:**
 
 ```bash=
 npm i firebase-tools -g
 ```
 
-**登入**
+**cli 登入:**
 
 ```bash=
 firebase login
 ```
 
-**初始化:**
+**cli 初始化:**
 
 ```bash=
 firebase init functions
@@ -503,3 +505,196 @@ firebase init functions
 ![](https://i.imgur.com/Hq5Qc8F.png)
 
 ---
+
+## 14. Cloud Function / Adding Claims
+
+`functions > index.js`
+
+```javascript=
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+
+admin.initializeApp();
+// export 後面接 function名稱
+// https表示functions的類別
+// onCall表示我們可以從前端呼叫，執行return的promise
+// data: 是我們往後端送，關於user的資訊，將誰變成admin
+exports.addAdminRole = functions.https.onCall((data, context) => {
+  // 在登入的狀態下，取得user的資訊並且把他加入到管理者
+  return admin
+    .auth()
+    .getUserByEmail(data.email)
+    .then((user) => {
+      // 設定這個用戶的等級
+      return admin.auth().setCustomUserClaims(user.uid, {
+        admin: true,
+      });
+    })
+    .then(() => {
+      return {
+        message: `成功設定${data.email}成為管理者`,
+      };
+    })
+    .catch((err) => {
+      return err;
+    });
+});
+```
+
+cli 發佈到 firebase
+
+```bash=
+firebase deploy --only functions
+```
+
+中間需要連結付費帳戶才能開啟限定功能，但其實是免費的
+https://ithelp.ithome.com.tw/articles/10249916
+
+看到這個就表示佈屬成功
+![](https://i.imgur.com/ZkCv1k3.png)
+
+`index.html` 也要宣告 admin 的變數才能使用
+
+```htmlembedded=
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-functions.js"></script>
+<script>
+const functions = firebase.functions();
+</script>
+```
+
+`auth.js`前端要呼叫設置的 functions
+
+```javascript=
+// 新增管理員連結到cloud functions
+const adminForm = document.querySelector(".admin-actions");
+adminForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const adminEmail = document.querySelector("#admin-email").value;
+  const addAdminRole = functions.httpsCallable("addAdminRole");
+  addAdminRole({ email: adminEmail }).then((result) => {
+    console.log(result);
+  });
+});
+```
+
+---
+
+## 15. Updating the Admin UI
+
+create guide 是只有 admin 階級才能使用的!
+所以要將它改成不顯示，只有在登入時，判斷他是管理階級再改變成顯示狀態，也要去 firestore 只有管理者才能寫資料進去
+
+`index.html`找到 Create Guide，class 加上 admin
+
+```htmlembedded=
+<li class="admin" style="display: none;">
+    <a href="#" class="grey-text modal-    trigger" data-target="modal-create">
+        Create Guide
+    </a>
+</li>
+```
+
+`index.html`找到 Admin form，class 加上 admin，display:none;
+
+```htmlembedded=
+ <!-- ADMIN ACTIONS -->
+<form class="center-align admin-actions admin" style="margin: 40px auto; max-width: 300px; display:none;">
+    <input type="email" placeholder="User email" id="admin-email" required />
+    <button class="btn-small yellow darken-2 z-depth-0">Make admin</button>
+</form>
+```
+
+![](https://i.imgur.com/O6CU70X.png)
+
+`auth.js`
+
+```javascript=
+// 監聽狀態改變
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    if (
+      user.getIdTokenResult().then((idTokenResult) => {
+        console.log(idTokenResult.claims);
+        // 整個完整的token，email.userId...
+        console.log(idTokenResult.claims.admin);
+        //如果是管理者會是true
+        user.admin = idTokenResult.claims.admin;
+      })
+    )
+      db.collection("guides").onSnapshot(
+        (snapshot) => {
+          setupGuides(snapshot.docs);
+          setUpUI(user);
+        },
+        (err) => console.log(err.message)
+      );
+  } else {
+    setupGuides([]);
+    setUpUI();
+  }
+});
+```
+
+`index.js`
+
+```javascript=
+const adminItems = document.querySelector(".admin");
+
+const setUpUI = (user) => {
+  if (user) {
+    db.collection("users")
+      .doc(user.uid)
+      .get()
+      .then((doc) => {
+        const html = `
+            <div>Logged in as ${user.email}</div>
+            <div>${doc.data().bio}</div>
+            <div class="pink-text">${user.admin ? "Admin" : ""}</div>
+        `;
+        accountDetails.innerHTML = html;
+      });
+    if (user.admin) {
+      adminItems.forEach((item) => (item.style.display = "block"));
+    }
+   // ...省略
+  }
+};
+```
+
+---
+
+## 16. Firestore Rules With Claims
+
+![](https://i.imgur.com/yaUeg3t.png)
+
+---
+
+## 17. Securing the Cloud Function
+
+我們做了一個可以允許別人成為管理者的函式，但ＵＩ其時隱藏在 dom 裡面，只要讓 dom 顯示再送出資料也可以成為管理者！所以必須要在函式裡面做安全判斷！
+`functions > index.js`
+
+```javascript=
+// context就是用來抓取使用者資訊的
+exports.addAdminRole = functions.https.onCall((data, context) => {
+    if(context.auth.token.admin !== true)
+  // 在登入的狀態下，取得user的資訊並且把他加入到管理者
+  return admin
+    .auth()
+    .getUserByEmail(data.email)
+    .then((user) => {
+      // 設定這個用戶的等級
+      return admin.auth().setCustomUserClaims(user.uid, {
+        admin: true,
+      });
+    })
+    .then(() => {
+      return {
+        message: `成功設定${data.email}成為管理者`,
+      };
+    })
+    .catch((err) => {
+      return err;
+    });
+});
+```
