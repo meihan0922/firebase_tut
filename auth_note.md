@@ -677,7 +677,9 @@ const setUpUI = (user) => {
 ```javascript=
 // context就是用來抓取使用者資訊的
 exports.addAdminRole = functions.https.onCall((data, context) => {
-    if(context.auth.token.admin !== true)
+  if (context.auth.token.admin !== true) {
+    return { err: "只有管理員可以新增其他管理員" };
+  }
   // 在登入的狀態下，取得user的資訊並且把他加入到管理者
   return admin
     .auth()
