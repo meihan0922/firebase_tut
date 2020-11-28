@@ -7,7 +7,7 @@ import SignOutLink from "./SignOutLink";
 const Navbar = () => {
   return (
     <nav className="nav-wrapper">
-      <div className="container">
+      <div className="nav-container">
         <Link to="/" className="brand-logo">
           MeiPlan
         </Link>

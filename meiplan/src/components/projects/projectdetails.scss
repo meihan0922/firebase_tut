@@ -1,0 +1,27 @@
+.project-details {
+  display: flex;
+  width: 100%;
+  flex-flow: column;
+  max-width: 980px;
+  margin: auto;
+  padding: 30px;
+  border-bottom: 1px solid #aaa;
+  > div {
+    margin-top: 15px;
+  }
+  .card-title {
+    font-size: 30px;
+    font-weight: bold;
+  }
+  .card-action {
+    display: flex;
+    justify-content: flex-end;
+    span {
+      font-size: 16px;
+      color: #aaa;
+      &:last-child {
+        margin-left: 15px;
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.project-summary {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  background: #fff;
+  margin-bottom: 15px;
+  .card-content {
+    font-size: 30px;
+    font-weight: bold;
+  }
+  .grey-text {
+    font-size: 15px;
+    color: #aaa;
+  }
+}

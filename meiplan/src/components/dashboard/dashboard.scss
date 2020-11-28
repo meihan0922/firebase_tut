@@ -1,0 +1,11 @@
+.dashboard {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  max-width: 980px;
+  margin: auto;
+  > div {
+    margin-top: 15px;
+    width: 45%;
+  }
+}
