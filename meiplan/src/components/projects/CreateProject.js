@@ -1,11 +1,18 @@
 import React from "react";
 import "./create.scss";
+import { createProject } from "../../store/actions/projectAction";
+import { useDispatch } from "react-redux";
 
 const CreateProject = () => {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
+  const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
+    createProject({
+      title,
+      content,
+    });
   };
   const handleChange = (e) => {
     switch (e.target.id) {

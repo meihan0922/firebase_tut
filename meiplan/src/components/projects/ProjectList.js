@@ -1,13 +1,21 @@
 import React from "react";
 import ProjectSummary from "./ProjectSummary";
+import { useSelector } from "react-redux";
 
 const ProjectList = () => {
+  const list = useSelector((state) => state.product.project);
   return (
     <div className="project-list">
-      <ProjectSummary />
-      <ProjectSummary />
-      <ProjectSummary />
-      <ProjectSummary />
+      {list.lenght > 0 &&
+        list.map((item) => {
+          return (
+            <ProjectSummary
+              key={item.id}
+              title={item.title}
+              content={item.content}
+            />
+          );
+        })}
     </div>
   );
 };
