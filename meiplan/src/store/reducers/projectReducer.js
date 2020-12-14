@@ -1,3 +1,4 @@
+import { CREATE_PROJECT, CREATE_PROJECT_ERR } from "../actions/actions";
 const initState = {
   project: [
     { id: 1, title: "標題A", content: "內容A" },
@@ -7,7 +8,17 @@ const initState = {
 };
 
 const projectReducer = (state = initState, action) => {
-  return state;
+  switch (action.type) {
+    case CREATE_PROJECT:
+      console.log("ccccc", action.project);
+      return state;
+    case CREATE_PROJECT_ERR:
+      console.log("err", action.err);
+      return state;
+    default:
+      console.log("default");
+      return state;
+  }
 };
 
 export default projectReducer;

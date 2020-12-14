@@ -9,10 +9,12 @@ const CreateProject = () => {
   const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
-    createProject({
-      title,
-      content,
-    });
+    dispatch(
+      createProject({
+        title,
+        content,
+      })
+    );
   };
   const handleChange = (e) => {
     switch (e.target.id) {

@@ -4,9 +4,10 @@ import { useSelector } from "react-redux";
 
 const ProjectList = () => {
   const list = useSelector((state) => state.product.project);
+  console.log("list", list);
   return (
     <div className="project-list">
-      {list.lenght > 0 &&
+      {list.length > 0 &&
         list.map((item) => {
           return (
             <ProjectSummary
